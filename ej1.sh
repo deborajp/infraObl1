@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Debora Jimenez (266908)"
-echo "Magdalena Becerra ()"
+echo "Magdalena Becerra (314825)"
 echo "Nicolas Cabrera ()"
 
 # Función para agregar un usuarios nuevo
