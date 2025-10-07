@@ -104,9 +104,9 @@ while true; do
     	case $opcion in
     	1) crear_usuario ;;
     	2) cambiar_contrasena ;;
-        3) ingresar_producto ;;
+        3) crear_producto ;;
         4) vender_producto ;;
-        5) filtrar_productos ;;
+        5) filtrar_productos_tipo ;;
         6) crear_reporte ;;
     	7) echo "!Hasta luego!"; exit ;;
     	*) echo "Opción no válida. Por favor, seleccione una opción válida." ;;
@@ -165,7 +165,7 @@ actualizar_cantidad_producto() {
 }
 
 filtrar_productos_tipo(){
-    local tipo="$1"
+    read -p "Ingrese el tipo de producto que busca:" tipo
     if [[ -z "$tipo" ]]; then 
         cat productos.txt
     else
