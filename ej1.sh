@@ -20,6 +20,67 @@ crear_usuario(){
         fi
     done
 }
+ 
+
+# Función para agregar un producto nuevo
+crear_producto(){
+    while true; do
+        read -p "Ingrese el tipo de producto:" tipo
+        #Verifica que el tipo sea uno permitido
+        if grep -iwq "^$tipo" tipoProducto.txt; then
+            codigo=${tipo^^}
+            codigo=${codigo:0:3}
+            read -p "Ingrese el modelo de producto:" modelo
+            read -p "Ingrese la cantidad del producto:" cantidad
+            #Revisa si el producto de ese tipo y modelo existe para actualizar la cantidad
+            if grep -iwq "^$codigo:$tipo:$modelo:" productos.txt; then
+                actualizar_cantidad_producto "$codigo" "$tipo" "$modelo" "$cantidad"
+            else
+                read -p "Ingrese una descripcion para el producto:" descripcion
+                read -p "Ingrese el precio del producto (debe ser un numero entero):" precio
+                #precio=$(echo "scale=0; $precio/1 + 0.5/1" | bc)
+                echo "$codigo:$tipo:$modelo:$descripcion:$cantidad:$precio" >> productos.txt
+                echo "El producto ha sido agregado correctamente."
+                break
+            fi
+        else
+            echo "Este tipo de producto no es permitido. Ingrese uno nuevo."
+        fi
+    done
+}
+
+actualizar_cantidad_producto() {
+    local codigo="$1"
+    local tipo="$2"
+    local modelo="$3"
+    local cantidad_a_sumar="$4"
+    linea=$(grep -iw "^$codigo:$tipo:$modelo:" productos.txt)
+    if [[ -n "$linea" ]]; then
+        descripcion=$(echo "$linea" | cut -d: -f4)
+        cantidad_actual=$(echo "$linea" | cut -d: -f5)
+        precio=$(echo "$linea" | cut -d: -f6)
+
+        #Calcula lanueva cantidad del producto
+        nueva_cantidad=$((cantidad_actual + cantidad_a_sumar))
+
+        nueva_linea="$codigo:$tipo:$modelo:$descripcion:$nueva_cantidad:$precio"
+        sed -i.bak "s|^$codigo:$tipo:$modelo:.*|$nueva_linea|" productos.txt
+        echo "El producto ha sido actualizado correctamente."
+    else
+        echo "El producto $tipo:$modelo no existe."
+    fi
+}
+
+
+filtrar_productos_tipo(){
+    read -p "Ingrese el tipo de producto que busca:" tipo
+    if [[ -z "$tipo" ]]; then 
+        cat productos.txt
+    else
+        grep -i "^$tipo:" productos.txt
+    fi
+}
+
 
 # Función para cambiar contraseña
 cambiar_contrasena(){
@@ -112,63 +173,3 @@ while true; do
     	*) echo "Opción no válida. Por favor, seleccione una opción válida." ;;
     	esac
 done
-
-# Función para agregar un producto nuevo
-crear_producto(){
-    while true; do
-        read -p "Ingrese el tipo de producto:" tipo
-        #Verifica que el tipo sea uno permitido
-        if grep -q "^$tipo" tipoProducto.txt; then
-            read -p "Ingrese el modelo de producto:" modelo
-            read -p "Ingrese la cantidad del producto:" cantidad
-            #Revisa si el producto de ese tipo y modelo existe para actualizar la cantidad
-            if grep -q "^$tipo:$modelo:" productos.txt; then
-                actualizar_cantidad_producto "$tipo" "$modelo" "$cantidad"
-            else
-                read -p "Ingrese una descripcion para el producto:" descripcion
-                read -p "Ingrese el precio del producto (debe ser un numero entero):" precio
-                precio=$(echo "scale=0; $precio/1 + 0.5/1" | bc)
-                codigo=${tipo^^:0:3}
-                echo "$codigo:$tipo:$modelo:$descripcion:$cantidad:$precio" >> productos.txt
-                echo "El producto ha sido agregado correctamente."
-                break
-            fi
-        else
-            echo "Este tipo de producto no es permitido. Ingrese uno nuevo."
-        fi
-    done
-}
-
-actualizar_cantidad_producto() {
-    local tipo="$1"
-    local modelo="$2"
-    local cantidad_a_sumar="$3"
-
-    # Verifica si el producto existe
-    if grep -q "^$tipo:$modelo:" productos.txt; then
-        linea=$(grep "^$tipo:$modelo:" productos.txt)
-        codigo=$(echo "$linea" | cut -d: -f1)
-        descripcion=$(echo "$linea" | cut -d: -f4)
-        cantidad_actual=$(echo "$linea" | cut -d: -f5)
-        precio=$(echo "$linea" | cut -d: -f6)
-
-        #A la cantidad ya existente se le suma la cantidad ingresada
-        nueva_cantidad=$((cantidad_actual + cantidad_a_sumar))
-
-        nueva_linea="$codigo:$tipo:$modelo:$descripcion:$nueva_cantidad:$precio"
-        sed -i.bak "/^$tipo:$modelo:/c\\$nueva_linea" productos.txt
-        echo "El producto ha sido actualizado correctamente."
-
-    else
-        echo "El producto $tipo:$modelo no existe."
-    fi
-}
-
-filtrar_productos_tipo(){
-    read -p "Ingrese el tipo de producto que busca:" tipo
-    if [[ -z "$tipo" ]]; then 
-        cat productos.txt
-    else
-        grep -i "^$tipo:" productos.txt
-    fi
-}
