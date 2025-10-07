@@ -163,3 +163,12 @@ actualizar_cantidad_producto() {
         echo "El producto $tipo:$modelo no existe."
     fi
 }
+
+filtrar_productos_tipo(){
+    local tipo="$1"
+    if [[ -z "$tipo" ]]; then 
+        cat productos.txt
+    else
+        grep -i "^$tipo:" productos.txt
+    fi
+}
