@@ -2,7 +2,7 @@
 
 echo "Debora Jimenez (266908)"
 echo "Magdalena Becerra (314825)"
-echo "Nicolas Cabrera ()"
+echo "Nicolas Cabrera (307905)"
 
 # Función para agregar un usuarios nuevo
 crear_usuario(){
@@ -69,6 +69,70 @@ actualizar_cantidad_producto() {
     else
         echo "El producto $tipo:$modelo no existe."
     fi
+}
+
+
+# Funcion para vender un producto
+vender_producto() {
+    echo " Venta de Productos"
+
+    if [ ! -s productos.txt ]; then
+        echo "No hay productos registrados"
+        return
+    fi
+
+    echo "Lista de Productos disponibles:"
+    nl -w -s". " productos.txt
+
+    total=0
+
+    while true; do
+        read -p "Ingrese el numero del producto a comprar (0 para terminar)"
+
+        if [ "$num" -eq 0 ]; then
+            break
+        fi
+
+        linea=$(head -n "$num" productos.txt | tail -n 1)
+
+        if [ -z "linea" ]; then
+            echo "Numero invalido"
+            continue
+        fi
+
+        codigo=$(echo "$linea" | cut -d: -f1)
+        tipo=$(echo "$linea" | cut -d: -f2)
+        modelo=$(echo "$linea" | cut -d: -f3)
+        descripcion=$(echo "$linea" | cut -d: -f4)
+        stock=$(echo "$linea" | cut -d: -f5)
+        precio=$(echo "$linea" | cut -d: -f6)
+
+        echo "Seleccionado: $tipo - $modelo"
+        echo "Stock disponible: $stock unidades"
+        echo "Precio unitario: $precio"
+
+        read -p "Ingrese cantidad a comprar: " cantidad
+        
+        if[ "$cantidad" -gt "$stock" ]; then
+            echo "No hay suficiente stock disponible"
+            continue
+        fi
+
+        nuevo_stock=$(stock - cantidad)
+        total_item=$(cantidad * precio)
+        total=$(total + total_item)
+
+        #crear archivo temporal para reemplazar
+        grep -v "^$codigo:$tipo:$modelo:" productos.txt > temp.txt
+        echo "$codigo:$tipo:$modelo:$descripcion:$nuevo_stock:$precio" >> temp.txt
+        mv temp.txt productos.txt
+
+        echo "Compra realizada: $cantidad unidades de $modelo por \$$total_item"
+    done
+
+    echo "Total de la compra : \$$total"
+
+
 }
 
 
