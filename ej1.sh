@@ -82,12 +82,12 @@ vender_producto() {
     fi
 
     echo "Lista de Productos disponibles:"
-    nl -w -s". " productos.txt
+    nl -w2 -s ". " productos.txt
 
     total=0
 
     while true; do
-        read -p "Ingrese el numero del producto a comprar (0 para terminar)"
+        read -p "Ingrese el numero del producto a comprar (0 para terminar) " num
 
         if [ "$num" -eq 0 ]; then
             break
@@ -113,14 +113,14 @@ vender_producto() {
 
         read -p "Ingrese cantidad a comprar: " cantidad
         
-        if[ "$cantidad" -gt "$stock" ]; then
+        if [ "$cantidad" -gt "$stock" ]; then
             echo "No hay suficiente stock disponible"
             continue
         fi
 
-        nuevo_stock=$(stock - cantidad)
-        total_item=$(cantidad * precio)
-        total=$(total + total_item)
+        nuevo_stock=$(($stock - $cantidad))
+        total_item=$(($cantidad * $precio))
+        total=$(($total + $total_item))
 
         #crear archivo temporal para reemplazar
         grep -v "^$codigo:$tipo:$modelo:" productos.txt > temp.txt
