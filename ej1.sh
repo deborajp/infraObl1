@@ -145,6 +145,30 @@ filtrar_productos_tipo(){
     fi
 }
 
+# Función para crear reporte de pinturas (todos los productos)
+crear_reporte() {
+    carpeta_datos="./Datos"
+    archivo_reporte="$carpeta_datos/datos.csv"
+
+    # Crear carpeta Datos si no existe
+    if [ ! -d "$carpeta_datos" ]; then
+        mkdir "$carpeta_datos"
+    fi
+
+    # Verificar que existan productos registrados
+    if [ ! -s productos.txt ]; then
+        echo "No hay productos registrados para generar el reporte."
+        return
+    fi
+
+    # Crear archivo CSV con encabezados
+    echo "Codigo,Tipo,Modelo,Descripcion,Cantidad,Precio" > "$archivo_reporte"
+
+    # Convertir los : a , para formato CSV
+    awk -F: '{print $1","$2","$3","$4","$5","$6}' productos.txt >> "$archivo_reporte"
+
+    echo "Reporte generado correctamente en: $archivo_reporte"
+}
 
 # Función para cambiar contraseña
 cambiar_contrasena(){
