@@ -76,9 +76,10 @@ actualizar_cantidad_producto() {
 vender_producto() {
     echo " Venta de Productos"
 
-    if [ ! -s productos.txt ]; then
-        echo "No hay productos registrados"
-        return
+    # Verificar si hay productos cargados (líneas no vacías)
+    if [ ! -s productos.txt ] || [ "$(grep -cv '^$' productos.txt)" -eq 0 ]; then
+      echo "No hay productos registrados."
+      return
     fi
 
     total=0
