@@ -75,21 +75,32 @@ actualizar_cantidad_producto() {
 vender_producto() {
     echo " Venta de Productos"
 
-    if [ ! -s productos.txt ]; then
-        echo "No hay productos registrados"
-        return
+    # Verificar si hay productos cargados (líneas no vacías)
+    if [ ! -s productos.txt ] || [ "$(grep -cv '^$' productos.txt)" -eq 0 ]; then
+      echo "No hay productos registrados."
+      return
     fi
-
-    echo "Lista de Productos disponibles:"
-    nl -w2 -s ". " productos.txt
 
     total=0
 
     while true; do
+        echo "Lista de Productos disponibles:"
+        nl -w2 -s ". " productos.txt
+
+
         read -p "Ingrese el numero del producto a comprar (0 para terminar) " num
 
         if [ "$num" -eq 0 ]; then
             break
+        fi
+
+        # Calcular cuantos productos hay en total sin linea vacias
+        total_lineas=$(grep -cv '^$' productos.txt)
+
+        # Validar que el numero exista (que este entre 1 y total_lineas)
+        if [ "$num" -lt 1 ] || [ "$num" -gt "$total_lineas" ]; then
+            echo "Numero invalido. Por favor ingrese un numero entre 1 y $total_lineas."
+            continue
         fi
 
         linea=$(head -n "$num" productos.txt | tail -n 1)
@@ -113,8 +124,8 @@ vender_producto() {
         read -p "Ingrese cantidad a comprar: " cantidad
         
         if [ "$cantidad" -le 0 ]; then
-        echo "La cantidad debe ser mayor que 0"
-        continue
+          echo "La cantidad debe ser mayor que 0"
+          continue
         fi
 
         if [ "$cantidad" -gt "$stock" ]; then
@@ -126,8 +137,10 @@ vender_producto() {
         total_item=$(($cantidad * $precio))
         total=$(($total + $total_item))
 
-        # Actualizar el archivo productos.txt
-        sed -i.bak "${num}s|.*|$nueva_linea|" productos.txt
+
+        #Actualizar la linea del producto comprado
+        nueva_linea="$codigo:$tipo:$modelo:$descripcion:$nuevo_stock:$precio"
+        sed -i "${num}s|.*|$nueva_linea|" productos.txt
 
         echo "Compra realizada: $cantidad unidades de $modelo por \$$total_item"
     done
