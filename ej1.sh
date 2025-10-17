@@ -34,6 +34,7 @@ crear_producto(){
             #Revisa si el producto de ese tipo y modelo existe para actualizar la cantidad
             if grep -iq "$codigo:$tipo:$modelo:" productos.txt; then
                 actualizar_cantidad_producto "${codigo^^}" "${tipo,,}" "${modelo,,}" "$cantidad"
+                break
             else
                 read -p "Ingrese una descripcion para el producto:" descripcion
                 read -p "Ingrese el precio del producto (debe ser un numero entero):" precio
