@@ -268,10 +268,10 @@ while true; do
     	case $opcion in
     	1) crear_usuario ;;
     	2) cambiar_contrasena ;;
-        3) crear_producto ;;
-        4) vender_producto ;;
-        5) filtrar_productos_tipo ;;
-        6) crear_reporte ;;
+      3) crear_producto ;;
+      4) vender_producto ;;
+      5) filtrar_productos_tipo ;;
+      6) crear_reporte ;;
     	7) echo "!Hasta luego!"; exit ;;
     	*) echo "Opción no válida. Por favor, seleccione una opción válida." ;;
     	esac
