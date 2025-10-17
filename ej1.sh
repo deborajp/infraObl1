@@ -81,16 +81,26 @@ vender_producto() {
         return
     fi
 
-    echo "Lista de Productos disponibles:"
-    nl -w2 -s ". " productos.txt
-
     total=0
 
     while true; do
+        echo "Lista de Productos disponibles:"
+        nl -w2 -s ". " productos.txt
+
+
         read -p "Ingrese el numero del producto a comprar (0 para terminar) " num
 
         if [ "$num" -eq 0 ]; then
             break
+        fi
+
+        # Calcular cuantos productos hay en total
+        total_lineas=$(wc -l < productos.txt)
+
+        # Validar que el numero exista (que este entre 1 y total_lineas)
+        if [ "$num" -lt 1 ] || [ "$num" -gt "$total_lineas" ]; then
+            echo "Numero invalido. Por favor ingrese un numero entre 1 y $total_lineas."
+            continue
         fi
 
         linea=$(head -n "$num" productos.txt | tail -n 1)
@@ -114,8 +124,8 @@ vender_producto() {
         read -p "Ingrese cantidad a comprar: " cantidad
         
         if [ "$cantidad" -le 0 ]; then
-        echo "La cantidad debe ser mayor que 0"
-        continue
+          echo "La cantidad debe ser mayor que 0"
+          continue
         fi
 
         if [ "$cantidad" -gt "$stock" ]; then
