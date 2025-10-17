@@ -28,18 +28,17 @@ crear_producto(){
         read -p "Ingrese el tipo de producto:" tipo
         #Verifica que el tipo sea uno permitido
         if grep -iwq "^$tipo" tipoProducto.txt; then
-            codigo=${tipo^^}
-            codigo=${codigo:0:3}
+            codigo=${tipo:0:3}
             read -p "Ingrese el modelo de producto:" modelo
             read -p "Ingrese la cantidad del producto:" cantidad
             #Revisa si el producto de ese tipo y modelo existe para actualizar la cantidad
-            if grep -iwq "^$codigo:$tipo:$modelo:" productos.txt; then
-                actualizar_cantidad_producto "$codigo" "$tipo" "$modelo" "$cantidad"
+            if grep -iq "$codigo:$tipo:$modelo:" productos.txt; then
+                actualizar_cantidad_producto "${codigo^^}" "${tipo,,}" "${modelo,,}" "$cantidad"
             else
                 read -p "Ingrese una descripcion para el producto:" descripcion
                 read -p "Ingrese el precio del producto (debe ser un numero entero):" precio
                 #precio=$(echo "scale=0; $precio/1 + 0.5/1" | bc)
-                echo "$codigo:$tipo:$modelo:$descripcion:$cantidad:$precio" >> productos.txt
+                echo "${codigo^^}:${tipo,,}:${modelo,,}:$descripcion:$cantidad:$precio" >> productos.txt
                 echo "El producto ha sido agregado correctamente."
                 break
             fi
@@ -54,7 +53,7 @@ actualizar_cantidad_producto() {
     local tipo="$2"
     local modelo="$3"
     local cantidad_a_sumar="$4"
-    linea=$(grep -iw "^$codigo:$tipo:$modelo:" productos.txt)
+    linea=$(grep -i "^$codigo:$tipo:$modelo:" productos.txt)
     if [[ -n "$linea" ]]; then
         descripcion=$(echo "$linea" | cut -d: -f4)
         cantidad_actual=$(echo "$linea" | cut -d: -f5)
