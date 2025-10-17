@@ -122,10 +122,7 @@ vender_producto() {
         total_item=$(($cantidad * $precio))
         total=$(($total + $total_item))
 
-        #crear archivo temporal para reemplazar
-        grep -v "^$codigo:$tipo:$modelo:" productos.txt > temp.txt
-        echo "$codigo:$tipo:$modelo:$descripcion:$nuevo_stock:$precio" >> temp.txt
-        mv temp.txt productos.txt
+        sed -i.bak "${num}s|.*|$nueva_linea|" productos.txt
 
         echo "Compra realizada: $cantidad unidades de $modelo por \$$total_item"
     done
