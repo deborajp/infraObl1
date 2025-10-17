@@ -113,6 +113,11 @@ vender_producto() {
 
         read -p "Ingrese cantidad a comprar: " cantidad
         
+        if [ "$cantidad" -le 0 ]; then
+        echo "La cantidad debe ser mayor que 0"
+        continue
+fi
+
         if [ "$cantidad" -gt "$stock" ]; then
             echo "No hay suficiente stock disponible"
             continue
