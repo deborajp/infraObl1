@@ -122,6 +122,7 @@ vender_producto() {
         total_item=$(($cantidad * $precio))
         total=$(($total + $total_item))
 
+        # Actualizar el archivo productos.txt
         sed -i.bak "${num}s|.*|$nueva_linea|" productos.txt
 
         echo "Compra realizada: $cantidad unidades de $modelo por \$$total_item"
