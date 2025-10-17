@@ -156,9 +156,13 @@ filtrar_productos_tipo(){
     read -p "Ingrese el tipo de producto que busca:" tipo
     codigo=${tipo:0:3}
     if [[ -z "$tipo" ]]; then 
-        echo "No existen productos de ese tipo"
+        cat productos.txt
     else
-        grep -i "${codigo^^}:" productos.txt
+        if grep -iq "${codigo^^}:" productos.txt; then
+            grep -i "${codigo^^}:" productos.txt
+        else
+            echo "No existen productos de ese tipo"
+        fi
     fi
 }
 
