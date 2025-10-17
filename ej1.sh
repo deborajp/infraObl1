@@ -154,10 +154,11 @@ vender_producto() {
 
 filtrar_productos_tipo(){
     read -p "Ingrese el tipo de producto que busca:" tipo
+    codigo=${tipo:0:3}
     if [[ -z "$tipo" ]]; then 
-        cat productos.txt
+        echo "No existen productos de ese tipo"
     else
-        grep -i "^$tipo:" productos.txt
+        grep -i "${codigo^^}:" productos.txt
     fi
 }
 
