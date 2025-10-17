@@ -94,8 +94,8 @@ vender_producto() {
             break
         fi
 
-        # Calcular cuantos productos hay en total
-        total_lineas=$(wc -l < productos.txt)
+        # Calcular cuantos productos hay en total sin linea vacias
+        total_lineas=$(grep -cv '^$' productos.txt)
 
         # Validar que el numero exista (que este entre 1 y total_lineas)
         if [ "$num" -lt 1 ] || [ "$num" -gt "$total_lineas" ]; then
