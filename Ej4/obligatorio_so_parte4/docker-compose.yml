@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  web1:
+    build: ./web
+    container_name: web1
+    hostname: web1
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - internal
+    restart: unless-stopped
+
+  web2:
+    build: ./web
+    container_name: web2
+    hostname: web2
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - internal
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: redis
+    hostname: redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - internal
+    restart: unless-stopped
+
+  loadbalancer:
+    build: ./nginx
+    container_name: nginx
+    hostname: nginx
+    ports:
+      - "8080:80"   # Acceso externo a la app
+    depends_on:
+      - web1
+      - web2
+    networks:
+      - internal
+      - external
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  internal:
+    driver: bridge
+  external:
+    driver: bridge
